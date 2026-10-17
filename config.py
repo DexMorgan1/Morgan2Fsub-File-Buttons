@@ -27,6 +27,7 @@ TV_SHOW_BUTTON_TEXT = os.environ.get("TV_SHOW_BUTTON_TEXT", "📺 TV SHOW").stri
 TV_SHOW_BUTTON_LINK = os.environ.get("TV_SHOW_BUTTON_LINK", "").strip()
 MOVIES_BUTTON_TEXT = os.environ.get("MOVIES_BUTTON_TEXT", "🎬 MOVIES").strip() or "🎬 MOVIES"
 MOVIES_BUTTON_LINK = os.environ.get("MOVIES_BUTTON_LINK", "").strip()
+FILE_UPDATE_BUTTONS_ENABLED = os.environ.get("FILE_UPDATE_BUTTONS_ENABLED", "True").lower() == "true"
 
 
 START_MSG = os.environ.get("START_MESSAGE", "<b>Hello {first} 🏮\n\nWelcome to SeriesAchiever. Send a file link to access your files.</b>")
