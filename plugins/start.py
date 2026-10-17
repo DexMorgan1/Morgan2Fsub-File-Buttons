@@ -7,7 +7,14 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated
 from bot import Bot
 from config import (ADMINS, FORCE_MSG, START_MSG, CUSTOM_CAPTION, DISABLE_CHANNEL_BUTTON,
                     PROTECT_CONTENT)
-from helper_func import file_update_keyboard, subscribed, decode, get_messages
+from helper_func import (
+    copy_file_with_styled_buttons,
+    file_update_keyboard,
+    send_force_subscribe_message,
+    subscribed,
+    decode,
+    get_messages,
+)
 from database.database import (
     add_user, del_user, full_userbase, present_user,
     get_force_subscriptions, get_or_create_force_subscribe_link,
@@ -70,6 +77,11 @@ async def start_command(client: Client, message: Message):
         source_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
         reply_markup = file_update_keyboard(source_markup)
         try:
+            if await copy_file_with_styled_buttons(
+                client, msg, user_id, caption, source_markup,
+            ):
+                await asyncio.sleep(0.5)
+                continue
             await msg.copy(
                 chat_id=user_id,
                 caption=caption,
@@ -114,35 +126,39 @@ async def not_joined(client: Client, message: Message):
             invite_link = await get_or_create_force_subscribe_link(
                 channel['slot'], create_request_link,
             )
+            emoji = "📢" if channel['slot'] == 1 else "🎥"
             join_buttons.append(InlineKeyboardButton(
-                text=f"🔵 Join Channel {channel['slot']} 📢",
+                text=f"{emoji} Join Channel {channel['slot']}",
                 url=invite_link,
             ))
         except Exception as error:
             client.LOGGER(__name__).warning("Unable to create request link: %s", error)
 
     if join_buttons:
-        buttons.extend([[button] for button in join_buttons])
+        # Keep the two request-to-join choices on one row, left and right.
+        buttons.append(join_buttons)
 
     try:
         buttons.append([InlineKeyboardButton(
-            text="🟢 Try Again 🔄",
+            text="🔄 Try Again",
             url=f"https://t.me/{client.username}?start={message.command[1]}",
         )])
     except IndexError:
         pass
 
-    await message.reply(
-        text=FORCE_MSG.format(
-            first=message.from_user.first_name,
-            last=message.from_user.last_name,
-            username=None if not message.from_user.username else '@' + message.from_user.username,
-            mention=message.from_user.mention,
-            id=message.from_user.id,
-        ),
-        reply_markup=InlineKeyboardMarkup(buttons),
-        disable_web_page_preview=True,
+    text = FORCE_MSG.format(
+        first=message.from_user.first_name,
+        last=message.from_user.last_name,
+        username=None if not message.from_user.username else '@' + message.from_user.username,
+        mention=message.from_user.mention,
+        id=message.from_user.id,
     )
+    if not await send_force_subscribe_message(client, message, text, buttons):
+        await message.reply(
+            text=text,
+            reply_markup=InlineKeyboardMarkup(buttons),
+            disable_web_page_preview=True,
+        )
 
 
 def force_subscribe_keyboard(channels):
@@ -192,6 +208,15 @@ async def broadcast(client: Bot, message: Message):
             copy_options = {}
             if source_message.media:
                 source_markup = source_message.reply_markup if DISABLE_CHANNEL_BUTTON else None
+                if await copy_file_with_styled_buttons(
+                    client,
+                    source_message,
+                    chat_id,
+                    source_message.caption.html if source_message.caption else "",
+                    source_markup,
+                ):
+                    sent += 1
+                    continue
                 copy_options["reply_markup"] = file_update_keyboard(source_markup)
             await source_message.copy(chat_id, **copy_options)
             sent += 1
