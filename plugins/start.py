@@ -188,7 +188,12 @@ async def broadcast(client: Bot, message: Message):
     sent = 0
     for chat_id in await full_userbase():
         try:
-            await message.reply_to_message.copy(chat_id)
+            source_message = message.reply_to_message
+            copy_options = {}
+            if source_message.media:
+                source_markup = source_message.reply_markup if DISABLE_CHANNEL_BUTTON else None
+                copy_options["reply_markup"] = file_update_keyboard(source_markup)
+            await source_message.copy(chat_id, **copy_options)
             sent += 1
         except (UserIsBlocked, InputUserDeactivated):
             await del_user(chat_id)
