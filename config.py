@@ -31,7 +31,12 @@ FILE_UPDATE_BUTTONS_ENABLED = os.environ.get("FILE_UPDATE_BUTTONS_ENABLED", "Tru
 
 
 START_MSG = os.environ.get("START_MESSAGE", "<b>Hello {first} 🏮\n\nWelcome to SeriesAchiever. Send a file link to access your files.</b>")
-FORCE_MSG = os.environ.get("FORCE_SUB_MESSAGE", "<b>Hello {first} 🏮</b>\nYou must first become a member of our channels")
+FORCE_MSG = os.environ.get(
+    "FORCE_SUB_MESSAGE",
+    "👋 <b>Hello, {first},</b>\n\n"
+    "<i>To Receive the requested Files, you must join our two channels below.</i> 👇\n\n"
+    "📢 <b>Join, then tap 'Try Again' to access your requested files.</b>",
+)
 CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", None)
 PROTECT_CONTENT = os.environ.get("PROTECT_CONTENT", "False") == "True"
 DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", "False") == "True"
