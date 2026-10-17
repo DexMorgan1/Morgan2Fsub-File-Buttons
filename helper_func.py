@@ -15,6 +15,7 @@ from config import (
     AUTO_APPROVE_JOIN_REQUESTS,
     CUSTOM_CAPTION,
     DISABLE_CHANNEL_BUTTON,
+    FILE_UPDATE_BUTTONS_ENABLED,
     MOVIES_BUTTON_LINK,
     MOVIES_BUTTON_TEXT,
     PROTECT_CONTENT,
@@ -108,9 +109,10 @@ def file_update_keyboard(existing_markup=None):
     buttons continue to work. Empty link variables safely hide only their
     corresponding update button.
     """
-    rows = []
-    if existing_markup:
-        rows = [list(row) for row in existing_markup.inline_keyboard]
+    if not FILE_UPDATE_BUTTONS_ENABLED:
+        return existing_markup
+
+    rows = [list(row) for row in existing_markup.inline_keyboard] if existing_markup else []
 
     update_buttons = []
     if TV_SHOW_BUTTON_LINK:
