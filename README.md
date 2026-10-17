@@ -34,6 +34,7 @@
 * `MOVIES_BUTTON_LINK` Required for the MOVIES button below every file. Set this to any HTTPS or Telegram link in Railway.
 * `TV_SHOW_BUTTON_TEXT` Optional: Button label, defaults to `📺 TV SHOW`
 * `MOVIES_BUTTON_TEXT` Optional: Button label, defaults to `🎬 MOVIES`
+* `FILE_UPDATE_BUTTONS_ENABLED` Optional: Set to `False` in Railway to hide both file-update buttons. Set it to `True` to show them again.
 * `PROTECT_CONTENT` Optional: True if you need to prevent files from forwarding
 
 ### File update buttons
@@ -42,6 +43,8 @@ Each file delivered by the bot has a `📺 TV SHOW` and `🎬 MOVIES` button whe
 their links are supplied in Railway. Change either link in Railway and
 redeploy; no code change is needed. The bot keeps any existing file buttons,
 such as the Share URL button, and adds these update buttons underneath.
+Set `FILE_UPDATE_BUTTONS_ENABLED=False` in Railway whenever you want to turn
+both file-update buttons off, then redeploy.
 
 Telegram itself controls the actual inline-button colors. The FSub buttons use
 blue-circle and green-circle emojis so their purpose remains clear in every
